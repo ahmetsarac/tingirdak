@@ -14,29 +14,37 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MusicCard(cover: String = "", artist: String = "", name: String = "", duration: String = ""){
-    Card(modifier = Modifier.fillMaxWidth().clickable {  }
-    ){
-        Row(modifier = Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically){
-            Image(
-                modifier = Modifier.size(70.dp),
-                painter = painterResource(id = com.ahmetsarac.tingirdak.R.drawable.cover),
-                contentDescription = "Cover Photo",
-            )
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .weight(0.75f)
-                    ,
-                verticalArrangement = Arrangement.SpaceBetween
+fun MusicCard(cover: String = "", artist: String = "", name: String = "", duration: String = "") {
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { }
+    ) {
+        Row(
+            modifier = Modifier.padding(10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(modifier = Modifier.padding(vertical = 5.dp), text = "Arctic Monkeys")
-                Text("Do I Wanna Know?")
+                Image(
+                    modifier = Modifier.size(70.dp),
+                    painter = painterResource(id = com.ahmetsarac.tingirdak.R.drawable.cover),
+                    contentDescription = "Cover Photo",
+                )
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                ) {
+                    Text(
+                        modifier = Modifier.padding(vertical = 5.dp),
+                        text = "Arctic Monkeys"
+                    )
+                    Text ("Do I Wanna Know?", maxLines = 1)
+                }
             }
-            Text(
-                modifier = Modifier.weight(0.1f),
-                text = "4:26"
-            )
+            Text(text = "4:26")
         }
     }
 }
