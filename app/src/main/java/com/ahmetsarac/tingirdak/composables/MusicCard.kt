@@ -1,7 +1,7 @@
 package com.ahmetsarac.tingirdak.composables
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
@@ -9,12 +9,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MusicCard(cover: String = "", artist: String = "", name: String = "", duration: String = "") {
+fun MusicCard(id:Long, cover: Bitmap?, artist: String, name: String, duration: String) {
     Card(modifier = Modifier
         .fillMaxWidth()
         .clickable { }
@@ -30,7 +29,7 @@ fun MusicCard(cover: String = "", artist: String = "", name: String = "", durati
             ) {
                 Image(
                     modifier = Modifier.size(70.dp),
-                    painter = painterResource(id = com.ahmetsarac.tingirdak.R.drawable.cover),
+                    bitmap = cover!!.asImageBitmap(),
                     contentDescription = "Cover Photo",
                 )
                 Column(
@@ -39,12 +38,12 @@ fun MusicCard(cover: String = "", artist: String = "", name: String = "", durati
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 5.dp),
-                        text = "Arctic Monkeys"
+                        text = artist
                     )
-                    Text ("Do I Wanna Know?", maxLines = 1)
+                    Text (name, maxLines = 1)
                 }
             }
-            Text(text = "4:26")
+            Text(text = duration)
         }
     }
 }
