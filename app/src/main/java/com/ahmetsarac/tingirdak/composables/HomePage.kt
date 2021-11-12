@@ -35,7 +35,7 @@ fun HomePage(){
         val list = context.musicList()
         LazyColumn{
            items(list){index ->
-               MusicCard(id = index.songId, artist = index.artist, name = index.songTitle, cover = index.cover, duration = index.duration)
+               MusicCard(uri = index.contentUri, artist = index.artist, name = index.songTitle, cover = index.cover, duration = index.duration)
            }
         }
     }
