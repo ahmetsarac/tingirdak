@@ -16,7 +16,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.ahmetsarac.tingirdak.models.MusicCardModel
-import android.content.res.Resources
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.ahmetsarac.tingirdak.R
 
 import java.io.FileDescriptor
 import java.lang.Error
@@ -25,29 +34,61 @@ import java.lang.Exception
 
 @Preview(showBackground = true)
 @Composable
-fun HomePage(){
+fun HomePage() {
     Scaffold(
         topBar = {
-           AppBar(title = "Tingirdak") 
+            AppBar(title = "Tingirdak")
         }
-    ){
+    ) {
         val context = LocalContext.current
         val list = context.musicList()
-        LazyColumn{
-           items(list){index ->
-               MusicCard(uri = index.contentUri, artist = index.artist, name = index.songTitle, cover = index.cover, duration = index.duration)
-           }
+        val isPlaying = remember {
+            mutableStateOf(false)
         }
+        val playingSong: MutableState<MusicCardModel> = remember {
+            mutableStateOf(MusicCardModel(null, null, null, null, null, null))
+        }
+        Box(modifier = Modifier.fillMaxSize()) {
+           Box(modifier = Modifier.align(Alignment.Center).padding(bottom = if(isPlaying.value) 80.dp else 0.dp)){
+
+               LazyColumn {
+                   items(list) { index ->
+                       MusicCard(
+                           uri = index.contentUri!!,
+                           songId = index.songId,
+                           artist = index.artist!!,
+                           name = index.songTitle!!,
+                           cover = index.cover,
+                           duration = index.duration!!,
+                           isPlaying = isPlaying,
+                           playingSong = playingSong
+                       )
+                   }
+               }
+           }
+            if (isPlaying.value) {
+                Box(modifier = Modifier
+                    .align(Alignment.BottomCenter)){
+                    PlayingMusic(uri = playingSong.value.contentUri!!,
+                    songId = playingSong.value.songId!!,
+                    artist = playingSong.value.artist!!,
+                    name = playingSong.value.songTitle!!,
+                    cover = playingSong.value.cover!!,
+                    duration = playingSong.value.duration!!)
+                }
+            }
+        }
+
     }
 }
 
 @SuppressLint("Recycle")
-fun Context.musicList(): MutableList<MusicCardModel>{
+fun Context.musicList(): MutableList<MusicCardModel> {
     val list = mutableListOf<MusicCardModel>()
     val collection =
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        }else{
+        } else {
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         }
     val projection = arrayOf(
@@ -69,14 +110,14 @@ fun Context.musicList(): MutableList<MusicCardModel>{
         sortOrder
     )
 
-    query?.use{cursor ->
+    query?.use { cursor ->
         val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
         val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
         val titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
         val artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
         val albumIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
 
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
             val duration = cursor.getInt(durationColumn)
             val title = cursor.getString(titleColumn)
@@ -124,11 +165,5 @@ fun getAlbumart(context: Context, album_id: Long?): Bitmap? {
     } catch (e: Exception) {
         println("aka e")
     }
-    return albumArtBitMap ?: getDefaultAlbumArtEfficiently(context.resources)
-}
-
-
-fun getDefaultAlbumArtEfficiently(resource: Resources?): Bitmap? {
-    val bitmap = BitmapFactory.decodeResource(resource, com.ahmetsarac.tingirdak.R.drawable.note)
-    return bitmap
+    return albumArtBitMap ?: return BitmapFactory.decodeResource(context.resources, R.drawable.note)
 }

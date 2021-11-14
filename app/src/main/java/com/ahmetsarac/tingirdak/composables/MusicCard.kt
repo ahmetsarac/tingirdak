@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.ahmetsarac.tingirdak.models.MusicCardModel
 
 
 val mediaPlayer = MediaPlayer().apply {
@@ -32,7 +33,16 @@ val mediaPlayer = MediaPlayer().apply {
 
 
 @Composable
-fun MusicCard(uri: Uri, cover: Bitmap?, artist: String, name: String, duration: String) {
+fun MusicCard(
+    uri: Uri,
+    cover: Bitmap?,
+    artist: String,
+    name: String,
+    duration: String,
+    isPlaying: MutableState<Boolean>,
+    playingSong: MutableState<MusicCardModel>,
+    songId: Long?
+) {
 
     val context = LocalContext.current
     val playingState = remember{
@@ -42,6 +52,11 @@ fun MusicCard(uri: Uri, cover: Bitmap?, artist: String, name: String, duration: 
         .fillMaxWidth()
         .clickable {
             playMusic(context, playingState, uri)
+            isPlaying.value = true
+            val playingSongModel = MusicCardModel(uri, songId, cover!!,
+                name, artist, duration)
+            playingSong.value = playingSongModel
+
        }
     ) {
         Row(
