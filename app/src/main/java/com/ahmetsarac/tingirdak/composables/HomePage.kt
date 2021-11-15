@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,6 +33,11 @@ import java.io.FileDescriptor
 import java.lang.Error
 import java.lang.Exception
 
+
+val MusicSaver = listSaver<MusicCardModel, Any?>(
+    save = { listOf(it.contentUri, it.songId, it.cover, it.songTitle, it.artist, it.duration) },
+    restore = { MusicCardModel(it[0] as Uri, it[1] as Long, it[2] as Bitmap, it[3] as String, it[4] as String, it[5] as String) }
+)
 
 @Preview(showBackground = true)
 @Composable
@@ -42,14 +49,16 @@ fun HomePage() {
     ) {
         val context = LocalContext.current
         val list = context.musicList()
-        val isPlaying = remember {
+        val isPlaying = rememberSaveable {
             mutableStateOf(false)
         }
-        val playingSong: MutableState<MusicCardModel> = remember {
+        val playingSong= rememberSaveable (stateSaver = MusicSaver){
             mutableStateOf(MusicCardModel(null, null, null, null, null, null))
         }
         Box(modifier = Modifier.fillMaxSize()) {
-           Box(modifier = Modifier.align(Alignment.Center).padding(bottom = if(isPlaying.value) 80.dp else 0.dp)){
+           Box(modifier = Modifier
+               .align(Alignment.Center)
+               .padding(bottom = if (isPlaying.value) 80.dp else 0.dp)){
 
                LazyColumn {
                    items(list) { index ->
