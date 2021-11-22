@@ -45,13 +45,11 @@ fun MusicCard(
 ) {
 
     val context = LocalContext.current
-    val playingState = remember{
-        mutableStateOf(false)
-    }
+
     Card(modifier = Modifier
         .fillMaxWidth()
         .clickable {
-            playMusic(context, playingState, uri)
+            playMusic(context, uri)
             isPlaying.value = true
             val playingSongModel = MusicCardModel(uri, songId, cover!!,
                 name, artist, duration)
@@ -89,13 +87,12 @@ fun MusicCard(
     }
 }
 
-fun playMusic(context: Context, state: MutableState<Boolean>, uri: Uri) {
+fun playMusic(context: Context,  uri: Uri) {
     mediaPlayer.apply {
            reset()
             setDataSource(context, uri)
             prepare()
             start()
-            state.value = true
    }
 }
 

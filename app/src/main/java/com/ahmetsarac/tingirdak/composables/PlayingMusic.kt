@@ -14,16 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ahmetsarac.tingirdak.models.MusicCardModel
 import com.ahmetsarac.tingirdak.ui.theme.DarkBlue
 import java.time.format.TextStyle
 
 @Composable
-fun PlayingMusic(uri: Uri?, songId: Long?, artist: String?, name: String?, cover: Bitmap?, duration: String?) {
+fun PlayingMusic(navController: NavController, uri: Uri?, songId: Long?, artist: String?, name: String?, cover: Bitmap?, duration: String?) {
     Card(modifier = Modifier
         .fillMaxWidth()
         .clickable {
-
+            navController.navigate("music_page")
         }
     ) {
         Row(

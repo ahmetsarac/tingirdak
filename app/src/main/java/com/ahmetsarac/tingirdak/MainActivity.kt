@@ -5,9 +5,10 @@ import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.ahmetsarac.tingirdak.composables.HomePage
-import com.ahmetsarac.tingirdak.composables.GoToAppSettings
-import com.ahmetsarac.tingirdak.composables.RequestStoragePermission
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.ahmetsarac.tingirdak.composables.*
 import com.ahmetsarac.tingirdak.ui.theme.TingirdakTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -21,14 +22,14 @@ class MainActivity : ComponentActivity() {
         val windows = this.window
         windows.statusBarColor = Color.argb(255, 0, 13, 107)
         setContent {
-            TingirdakTheme {
+           TingirdakTheme {
                 val storagePermissionState = rememberPermissionState(
                     permission = Manifest.permission.READ_EXTERNAL_STORAGE
                 )
 
                 when {
                     storagePermissionState.hasPermission -> {
-                        HomePage()
+                        HomePageNav()
                     }
                     storagePermissionState.hasBeenDeniedPermanently() -> {
                         GoToAppSettings()
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 /**
  * If the permission requested and we don't want to show the rationale that means permission denied permanently

@@ -14,24 +14,22 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import com.ahmetsarac.tingirdak.models.MusicCardModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.ahmetsarac.tingirdak.R
 
-import java.io.FileDescriptor
-import java.lang.Error
-import java.lang.Exception
 
 
 val MusicSaver = listSaver<MusicCardModel, Any?>(
@@ -39,16 +37,33 @@ val MusicSaver = listSaver<MusicCardModel, Any?>(
     restore = { MusicCardModel(it[0] as Uri, it[1] as Long, it[2] as Bitmap, it[3] as String, it[4] as String, it[5] as String) }
 )
 
-@Preview(showBackground = true)
 @Composable
-fun HomePage() {
+fun HomePageNav(){
+
+    val context = LocalContext.current
+    val list = context.musicList()
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "home_page"){
+        composable("home_page"){
+            HomePage(navController, list)
+        }
+        composable("music_page"){
+            MusicPage(navController)
+        }
+    }
+
+}
+
+@Composable
+fun HomePage(navController: NavController, list: MutableList<MusicCardModel>) {
+
+
     Scaffold(
         topBar = {
             AppBar(title = "Tingirdak")
         }
     ) {
-        val context = LocalContext.current
-        val list = context.musicList()
+
         val isPlaying = rememberSaveable {
             mutableStateOf(false)
         }
@@ -57,8 +72,7 @@ fun HomePage() {
         }
         Box(modifier = Modifier.fillMaxSize()) {
            Box(modifier = Modifier
-               .align(Alignment.Center)
-               .padding(bottom = if (isPlaying.value) 80.dp else 0.dp)){
+                   .padding(bottom = if (isPlaying.value) 80.dp else 0.dp)){
 
                LazyColumn {
                    items(list) { index ->
@@ -78,7 +92,8 @@ fun HomePage() {
             if (isPlaying.value) {
                 Box(modifier = Modifier
                     .align(Alignment.BottomCenter)){
-                    PlayingMusic(uri = playingSong.value.contentUri!!,
+                    PlayingMusic(navController = navController,
+                    uri = playingSong.value.contentUri!!,
                     songId = playingSong.value.songId!!,
                     artist = playingSong.value.artist!!,
                     name = playingSong.value.songTitle!!,
@@ -108,7 +123,7 @@ fun Context.musicList(): MutableList<MusicCardModel> {
         MediaStore.Audio.Media.ALBUM_ID,
         MediaStore.Audio.Media.ARTIST
     )
-
+    val bitmap = BitmapFactory.decodeResource(this.resources, R.drawable.note)
     val selection = MediaStore.Audio.Media.IS_MUSIC + "!= 0"
     val sortOrder = "${MediaStore.Audio.Media.DISPLAY_NAME} ASC"
     val query = this.contentResolver.query(
@@ -136,14 +151,16 @@ fun Context.musicList(): MutableList<MusicCardModel> {
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 id
             )
-            val bitmap = getAlbumart(this, albumId)
+            //val bitmapUri = Uri.parse("content://media/external/audio/albumart/$albumId")
+            //val bitmap = getBitmapfromUri(this, bitmapUri)
             val durationString = convertMili(duration)
-            list.add(MusicCardModel(contentUri, id, bitmap!!, title, artist, durationString))
+            list.add(MusicCardModel(contentUri, id, bitmap, title, artist, durationString))
         }
 
     }
     return list
 }
+
 
 fun convertMili(milliseconds: Int): String {
     val seconds = (milliseconds / 1000) % 60
@@ -151,6 +168,7 @@ fun convertMili(milliseconds: Int): String {
     return String.format("%02d:%02d", minutes, seconds)
 }
 
+/*
 fun getAlbumart(context: Context, album_id: Long?): Bitmap? {
     var albumArtBitMap: Bitmap? = null
     val options = BitmapFactory.Options()
@@ -158,6 +176,7 @@ fun getAlbumart(context: Context, album_id: Long?): Bitmap? {
         val sArtworkUri = Uri
             .parse("content://media/external/audio/albumart")
         val uri = ContentUris.withAppendedId(sArtworkUri, album_id!!)
+        Log.d("uri", uri.toString())
         var pfd = context.contentResolver
             .openFileDescriptor(uri, "r")
         if (pfd != null) {
@@ -176,3 +195,5 @@ fun getAlbumart(context: Context, album_id: Long?): Bitmap? {
     }
     return albumArtBitMap ?: return BitmapFactory.decodeResource(context.resources, R.drawable.note)
 }
+
+ */
