@@ -5,9 +5,6 @@ import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.ahmetsarac.tingirdak.composables.*
 import com.ahmetsarac.tingirdak.ui.theme.TingirdakTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -18,7 +15,6 @@ import com.google.accompanist.permissions.rememberPermissionState
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val windows = this.window
         windows.statusBarColor = Color.argb(255, 0, 13, 107)
         setContent {
@@ -41,6 +37,8 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
 }
 
 
